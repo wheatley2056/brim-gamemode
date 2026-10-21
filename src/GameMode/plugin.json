@@ -1,11 +1,12 @@
 {
   "id": "de.brim.gamemode",
   "name": "GameMode",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "entry": "BrimGameMode.exe",
   "api": "1",
-  "slots": ["compact.leading", "compact.trailing", "hud", "expanded.tab"],
-  "permissions": ["overlay"],
+  "slots": ["compact.leading", "compact.trailing", "hud"],
+  "permissions": [],
+  "optionalPermissions": ["overlay"],
   "widgets": [
     { "id": "game", "name": "Spiel", "description": "FPS, Frametime, CPU, GPU und Temperatur im Spiel", "glyph": "", "sizes": ["medium", "small", "large"] }
   ],

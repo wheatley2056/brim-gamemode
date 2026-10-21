@@ -116,7 +116,8 @@ public sealed class GameModePluginTests
         Assert.Contains("game", _sink.Ended);
         var hud = Assert.Single(_sink.Huds);
         Assert.Contains("ELDEN RING · 1 min · Ø 91 FPS · max. 70 °C", hud.Announcement);
-        Assert.Contains("Zuletzt: ELDEN RING", Json(_sink.Views["status"]));
+        await plugin.SetPlacedWidgetsAsync(new Dictionary<string, IReadOnlyList<TileSize>> { ["game"] = [TileSize.Medium] });
+        Assert.Contains("Zuletzt: ELDEN RING", Json(_sink.Widgets[^1].Content));
     }
 
     [Fact]
@@ -148,7 +149,6 @@ public sealed class GameModePluginTests
 
         Assert.Null(plugin.Session);
         Assert.Empty(_sink.Activities);
-        Assert.Contains("Wartet auf ein Spiel", Json(_sink.Views["status"]));
     }
 
     [Fact]
@@ -181,21 +181,26 @@ public sealed class GameModePluginTests
     }
 
     [Fact]
-    public async Task Without_etw_rights_the_tab_offers_setup_and_system_values_still_show()
+    public async Task Without_etw_rights_widget_and_notch_offer_setup_and_system_values_still_show()
     {
         _frames.State = FrameSourceState.Denied;
         var plugin = Create(new PluginSettings { Include = PluginSettings.ParseNames("eldenring") });
+        await plugin.SetPlacedWidgetsAsync(new Dictionary<string, IReadOnlyList<TileSize>> { ["game"] = [TileSize.Small, TileSize.Large] });
+
+        Assert.All(_sink.Widgets, w => Assert.Contains("\"setup\"", Json(w.Content)));
+
         _processes.Running.Add(GamePid);
         _foreground.Window = Game;
-
         await plugin.TickAsync();
 
-        Assert.Contains("Einrichten", Json(_sink.Views["status"]));
-        Assert.Contains("95 %", Json(_sink.Last!.Expanded!));
+        var expanded = Json(_sink.Last!.Expanded!);
+        Assert.Contains("95 %", expanded);
+        Assert.Contains("Einrichten", expanded);
 
         await plugin.HandleActionAsync("setup");
         Assert.Equal(1, _permissionRequests);
-        Assert.Contains("ab und wieder an", Json(_sink.Views["status"]));
+        Assert.Contains("Ab- und wieder anmelden", Json(_sink.Last!.Expanded!));
+        Assert.DoesNotContain("\"setup\"", Json(_sink.Last!.Expanded!));
     }
 
     [Fact]

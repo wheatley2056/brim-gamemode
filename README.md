@@ -4,7 +4,7 @@ Merkt von selbst, wenn ein Spiel läuft, und zeigt in der Notch, wie es läuft:
 
 - **FPS, 1 % Low und Frametime** mit Verlauf, gemessen wie bei [PresentMon](https://github.com/GameTechDev/PresentMon) über Windows-Ereignisse (ETW, DXGI und D3D9).
 - **CPU- und GPU-Last, VRAM des Spiels und GPU-Temperatur**, mit denselben Werten wie im Task-Manager.
-- **Mini-Pille über dem Spiel:** Zieht sich die Notch im Vollbild zurück, bleibt eine kleine Pille mit „144 FPS · 6,9 ms“ stehen (auf Wunsch mit GPU-Temperatur). Braucht Brim 2.4.0 und das Recht „Mini-Pille über Vollbild-Apps“.
+- **Mini-Pille über dem Spiel:** Zieht sich die Notch im Vollbild zurück, bleibt eine kleine Pille mit „144 FPS · 6,9 ms“ stehen (auf Wunsch mit GPU-Temperatur). Gibt es ab Brim 2.5.0; ältere Versionen zeigen alles andere, nur ohne Pille.
 - **Kompakt:** Läuft das Spiel im Fenster, steht ein Gamepad mit den FPS in der Notch. Aufgeklappt zeigt der Tab „Jetzt“ alle Werte.
 - **Widget „Spiel“** für „Jetzt“ (klein, mittel, groß).
 - **Fazit:** Nach dem Spiel kurz Dauer, Ø FPS und höchste GPU-Temperatur, z. B. „ELDEN RING · 1:05 h · Ø 92 FPS · max. 71 °C“.
@@ -21,9 +21,9 @@ Browser, Videoplayer, Launcher, OBS, Discord, PowerPoint und ähnliche zählen n
 
 ## Rechte
 
-Brim fragt beim Einschalten nach dem Recht **„Mini-Pille über Vollbild-Apps und Spielen“**.
+Das Plugin braucht keine Rechte, die du bestätigen musst. Ab Brim 2.5.0 nutzt es das optionale Recht **„Mini-Pille über Vollbild-Apps und Spielen“**; ältere Versionen kennen es nicht und lassen das Plugin trotzdem laufen.
 
-Die Bildrate liest das Plugin aus Windows-Ereignissen. Das dürfen Admins und Mitglieder der Gruppe **„Leistungsprotokollbenutzer“**. Fehlt das Recht, zeigt die Karte im Tab „Plugins“ **Einrichten**: Windows fragt einmal nach Adminrechten und nimmt dein Konto in die Gruppe auf, danach einmal ab- und wieder anmelden. Hast du die FPS-Messung in Brim (Einstellungen → Spiele) schon eingerichtet, ist das erledigt. CPU, GPU und Temperatur gehen auch ohne.
+Die Bildrate liest das Plugin aus Windows-Ereignissen. Das dürfen Admins und Mitglieder der Gruppe **„Leistungsprotokollbenutzer“**. Fehlt das Recht, zeigen das Widget „Spiel“ und die aufgeklappte Notch **Einrichten**: Windows fragt einmal nach Adminrechten und nimmt dein Konto in die Gruppe auf, danach einmal ab- und wieder anmelden. Hast du die FPS-Messung in Brim (Einstellungen → Spiele) schon eingerichtet, ist das erledigt. CPU, GPU und Temperatur gehen auch ohne.
 
 Eine CPU-Temperatur zeigt das Plugin nicht: Windows liefert sie zuverlässig nur über einen Kerneltreiber.
 
@@ -31,7 +31,7 @@ Eine CPU-Temperatur zeigt das Plugin nicht: Windows liefert sie zuverlässig nur
 
 **Aus der Bibliothek:** Brim → Einstellungen → Plugins → Bibliothek → GameMode → Installieren.
 
-**Fertig gebaut:** `brim-gamemode.zip` aus dem neuesten Release nach `%LocalAppData%\Brim\Plugins\gamemode` entpacken, Brim neu starten und im Tab **Plugins** „GameMode“ einschalten.
+**Fertig gebaut:** `brim-gamemode.zip` aus dem neuesten Release nach `%LocalAppData%\Brim\Plugins\gamemode` entpacken, Brim neu starten und im Tab **Plugins** „GameMode“ einschalten. Das Widget „Spiel“ legst du auf „Jetzt“ ab (lange drücken oder rechts anklicken, dann „+“).
 
 **Selbst bauen:** Das Plugin nutzt `Brim.Sdk` aus dem Brim-Repository. Beide Repositories nebeneinander klonen:
 

@@ -9,7 +9,6 @@ internal sealed class RecordingSink : INotchSink
     public List<ActivityParams> Activities { get; } = [];
     public List<string> Ended { get; } = [];
     public List<HudParams> Huds { get; } = [];
-    public Dictionary<string, Widget> Views { get; } = [];
     public List<(string Id, TileSize Size, Widget Content)> Widgets { get; } = [];
     public List<string> Logs { get; } = [];
 
@@ -30,18 +29,6 @@ internal sealed class RecordingSink : INotchSink
     public Task ShowHudAsync(HudParams hud)
     {
         Huds.Add(hud);
-        return Task.CompletedTask;
-    }
-
-    public Task SetViewAsync(string id, Widget content, int order)
-    {
-        Views[id] = content;
-        return Task.CompletedTask;
-    }
-
-    public Task ClearViewAsync(string id)
-    {
-        Views.Remove(id);
         return Task.CompletedTask;
     }
 

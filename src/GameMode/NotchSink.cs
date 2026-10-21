@@ -11,8 +11,6 @@ public interface INotchSink
     Task SetActivityAsync(ActivityParams activity);
     Task EndActivityAsync(string id);
     Task ShowHudAsync(HudParams hud);
-    Task SetViewAsync(string id, Widget content, int order);
-    Task ClearViewAsync(string id);
     Task LogAsync(string message, string level);
     Task SetWidgetAsync(string id, TileSize size, Widget content);
 }
@@ -22,8 +20,6 @@ internal sealed class BrimSink(BrimPlugin brim) : INotchSink
     public Task SetActivityAsync(ActivityParams activity) => brim.SetActivityAsync(activity);
     public Task EndActivityAsync(string id) => brim.EndActivityAsync(id);
     public Task ShowHudAsync(HudParams hud) => brim.ShowHudAsync(hud);
-    public Task SetViewAsync(string id, Widget content, int order) => brim.SetViewAsync(id, content, order);
-    public Task ClearViewAsync(string id) => brim.ClearViewAsync(id);
     public Task LogAsync(string message, string level) => brim.LogAsync(message, level);
     public Task SetWidgetAsync(string id, TileSize size, Widget content) => brim.SetWidgetAsync(id, size, content);
 }
