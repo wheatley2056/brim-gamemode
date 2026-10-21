@@ -1,0 +1,19 @@
+{
+  "id": "de.brim.gamemode",
+  "name": "GameMode",
+  "version": "1.0.0",
+  "entry": "BrimGameMode.exe",
+  "api": "1",
+  "slots": ["compact.leading", "compact.trailing", "hud", "expanded.tab"],
+  "permissions": ["overlay"],
+  "widgets": [
+    { "id": "game", "name": "Spiel", "description": "FPS, Frametime, CPU, GPU und Temperatur im Spiel", "glyph": "", "sizes": ["medium", "small", "large"] }
+  ],
+  "settings": [
+    { "key": "overlay", "type": "bool", "label": "FPS-Pille über dem Spiel, wenn sich die Notch zurückzieht", "default": true },
+    { "key": "pillTemperature", "type": "bool", "label": "GPU-Temperatur in der Pille", "default": false },
+    { "key": "summary", "type": "bool", "label": "Fazit nach dem Spiel (Dauer, Ø FPS)", "default": true },
+    { "key": "include", "type": "string", "label": "Immer als Spiel erkennen (Prozessnamen, mit Komma getrennt)", "default": "" },
+    { "key": "exclude", "type": "string", "label": "Nie als Spiel erkennen (Prozessnamen, mit Komma getrennt)", "default": "" }
+  ]
+}
