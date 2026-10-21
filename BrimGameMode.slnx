@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/GameMode/GameMode.csproj" />
+  <Project Path="tests/GameMode.Tests/GameMode.Tests.csproj" />
+</Solution>
