@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "entry": "BrimGameMode.exe",
   "api": "1",
-  "slots": ["compact.leading", "compact.trailing", "hud", "expanded.tab"],
+  "slots": ["compact.leading", "compact.trailing", "hud"],
   "permissions": [],
   "optionalPermissions": ["overlay"],
   "widgets": [
