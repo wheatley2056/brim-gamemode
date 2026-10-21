@@ -4,7 +4,7 @@ Merkt von selbst, wenn ein Spiel läuft, und zeigt in der Notch, wie es läuft:
 
 - **FPS, 1 % Low und Frametime** mit Verlauf, gemessen wie bei [PresentMon](https://github.com/GameTechDev/PresentMon) über Windows-Ereignisse (ETW, DXGI und D3D9).
 - **CPU- und GPU-Last, VRAM des Spiels und GPU-Temperatur**, mit denselben Werten wie im Task-Manager.
-- **Mini-Pille über dem Spiel:** Zieht sich die Notch im Vollbild zurück, bleibt eine kleine Pille mit „144 FPS · 6,9 ms“ stehen (auf Wunsch mit GPU-Temperatur). Braucht Brim 2.3.1 und das Recht „Mini-Pille über Vollbild-Apps“.
+- **Mini-Pille über dem Spiel:** Zieht sich die Notch im Vollbild zurück, bleibt eine kleine Pille mit „144 FPS · 6,9 ms“ stehen (auf Wunsch mit GPU-Temperatur). Braucht Brim 2.4.0 und das Recht „Mini-Pille über Vollbild-Apps“.
 - **Kompakt:** Läuft das Spiel im Fenster, steht ein Gamepad mit den FPS in der Notch. Aufgeklappt zeigt der Tab „Jetzt“ alle Werte.
 - **Widget „Spiel“** für „Jetzt“ (klein, mittel, groß).
 - **Fazit:** Nach dem Spiel kurz Dauer, Ø FPS und höchste GPU-Temperatur, z. B. „ELDEN RING · 1:05 h · Ø 92 FPS · max. 71 °C“.
