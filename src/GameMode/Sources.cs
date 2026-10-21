@@ -25,6 +25,9 @@ public enum FrameSourceState
     Failed,
 }
 
+/// <summary>Zustand der FPS-Messung für die Anzeige; <paramref name="SetupNote"/> nach einem Klick auf „Einrichten“.</summary>
+public sealed record Measurement(FrameSourceState State, string? Message, string? SetupNote);
+
 /// <summary>Bildrate eines Prozesses aus seinen Presents (ETW, wie PresentMon).</summary>
 public interface IFrameSource : IDisposable
 {
