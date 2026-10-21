@@ -1,7 +1,7 @@
 {
   "id": "de.brim.gamemode",
   "name": "GameMode",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "entry": "BrimGameMode.exe",
   "api": "1",
   "slots": ["compact.leading", "compact.trailing", "hud"],
