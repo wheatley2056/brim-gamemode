@@ -63,7 +63,7 @@ public static class Views
     /// Die Aktivität „game“: vorn kompakt mit Symbol und FPS, als Mini-Pille über dem Vollbild (Recht „overlay“),
     /// aufgeklappt mit allen Werten. Liegt das Spiel im Hintergrund, belegt sie die Notch nicht.
     /// </summary>
-    public static ActivityParams Activity(GameSession session, PluginSettings settings, DateTimeOffset now, CultureInfo culture)
+    public static ActivityParams Activity(GameSession session, PluginSettings settings, Measurement measurement, DateTimeOffset now, CultureInfo culture)
     {
         var pill = PillText(session, settings.PillTemperature, culture);
         return new ActivityParams
@@ -77,14 +77,14 @@ public static class Views
                 Justify = Justify.Center,
                 AccessibleName = pill,
             },
-            Expanded = Expanded(session, now, culture),
+            Expanded = Expanded(session, measurement, now, culture),
             Rank = 5,
             Background = !session.InForeground,
             Overlay = settings.Overlay && session.InForeground,
         };
     }
 
-    public static Widget Expanded(GameSession session, DateTimeOffset now, CultureInfo culture)
+    public static Widget Expanded(GameSession session, Measurement measurement, DateTimeOffset now, CultureInfo culture)
     {
         var f = session.Frames;
         var header = new StackWidget(
@@ -122,6 +122,10 @@ public static class Views
             });
         }
         children.Add(SystemRow(session.System, culture));
+        if (SetupHint(measurement, compact: true) is { } hint)
+        {
+            children.Add(hint);
+        }
         return new StackWidget(children)
         {
             Orientation = StackOrientation.Vertical,
@@ -162,11 +166,11 @@ public static class Views
 
     // ───────── Widget „Spiel“ auf „Jetzt“ ─────────
 
-    public static Widget GameWidget(GameSession? session, GameSummary? last, TileSize size, DateTimeOffset now, CultureInfo culture)
+    public static Widget GameWidget(GameSession? session, GameSummary? last, Measurement measurement, TileSize size, DateTimeOffset now, CultureInfo culture)
     {
         if (session is null)
         {
-            return Idle(last, size, culture);
+            return Idle(last, measurement, size, culture);
         }
         var f = session.Frames;
         var fpsText = f is null ? "–" : Fps(f.Fps, culture);
@@ -200,11 +204,11 @@ public static class Views
                     AccessibleName = $"{session.Name}: {fpsText} FPS",
                 };
             default:
-                return Expanded(session, now, culture);
+                return Expanded(session, measurement, now, culture);
         }
     }
 
-    private static Widget Idle(GameSummary? last, TileSize size, CultureInfo culture)
+    private static Widget Idle(GameSummary? last, Measurement measurement, TileSize size, CultureInfo culture)
     {
         var lines = new List<Widget>
         {
@@ -215,7 +219,13 @@ public static class Views
                 Spacing = 8,
             },
         };
-        if (last is not null && size != TileSize.Small)
+        if (SetupHint(measurement, compact: size is not (TileSize.Large or TileSize.Full)) is { } hint)
+        {
+            lines.Add(size == TileSize.Small && measurement is { State: FrameSourceState.Denied, SetupNote: null }
+                ? new ButtonWidget("setup") { Kind = ButtonKind.Secondary, Label = "Einrichten" }
+                : hint);
+        }
+        else if (last is not null && size != TileSize.Small)
         {
             lines.Add(new TextWidget("Zuletzt: " + SummaryText(last, culture)) { Style = TextStyle.Caption, Wrap = size is TileSize.Large or TileSize.Full });
         }
@@ -224,57 +234,49 @@ public static class Views
             Orientation = StackOrientation.Vertical,
             Spacing = 4,
             Justify = Justify.Center,
-            Align = CrossAlign.Start,
+            Align = CrossAlign.Stretch,
         };
     }
 
-    // ───────── Tab „Plugins“ ─────────
+    // ───────── Einrichtung ─────────
 
-    /// <summary>Karte im Tab „Plugins“: was gerade läuft, sonst das letzte Spiel; bei fehlenden Rechten die Einrichtung.</summary>
-    public static Widget Status(FrameSourceState state, string? message, GameSession? session, GameSummary? last, string? setupNote, CultureInfo culture)
+    /// <summary>
+    /// Hinweis, wenn die FPS-Messung nicht läuft; <c>null</c>, wenn sie läuft. Steht im Widget und in der aufgeklappten
+    /// Notch, denn der Tab „Plugins“ ist nur zum Ein- und Ausschalten da.
+    /// </summary>
+    public static Widget? SetupHint(Measurement m, bool compact)
     {
-        var children = new List<Widget>
+        switch (m.State)
         {
-            new TextWidget("GameMode") { Style = TextStyle.Secondary, FontSize = 12 },
-        };
-        if (state == FrameSourceState.Denied)
-        {
-            children.Add(new TextWidget("FPS-Messung einrichten") { Style = TextStyle.Title, FontSize = 15 });
-            children.Add(new TextWidget(setupNote ?? "Die Bildrate kommt wie bei PresentMon aus Windows-Ereignissen. Dafür muss dein Konto einmalig in die Gruppe „Leistungsprotokollbenutzer“; Windows fragt dazu nach Adminrechten. CPU, GPU und Temperatur gehen auch ohne.")
-            {
-                Style = TextStyle.Secondary,
-                Wrap = true,
-            });
-            children.Add(new StackWidget(new ButtonWidget("setup") { Kind = ButtonKind.Secondary, Label = "Einrichten" }) { Justify = Justify.End });
+            case FrameSourceState.Denied:
+                var button = new ButtonWidget("setup") { Kind = ButtonKind.Secondary, Label = "Einrichten" };
+                if (compact)
+                {
+                    return new StackWidget(
+                        new TextWidget(m.SetupNote is null ? "FPS-Messung einrichten" : "Ab- und wieder anmelden") { Style = TextStyle.Caption, Grow = 1 },
+                        m.SetupNote is null ? button : new SpacerWidget())
+                    {
+                        Spacing = 8,
+                    };
+                }
+                return new StackWidget(
+                    new TextWidget("FPS-Messung einrichten") { Style = TextStyle.Title, FontSize = 15 },
+                    new TextWidget(m.SetupNote ?? "Die Bildrate kommt wie bei PresentMon aus Windows-Ereignissen. Dafür muss dein Konto einmalig in die Gruppe „Leistungsprotokollbenutzer“; Windows fragt dazu nach Adminrechten.")
+                    {
+                        Style = TextStyle.Caption,
+                        Wrap = true,
+                    },
+                    m.SetupNote is null ? new StackWidget(button) { Justify = Justify.End } : new SpacerWidget())
+                {
+                    Orientation = StackOrientation.Vertical,
+                    Spacing = 4,
+                    Align = CrossAlign.Stretch,
+                };
+            case FrameSourceState.Failed:
+                return new TextWidget("FPS-Messung läuft nicht" + (m.Message is { Length: > 0 } ? $": {m.Message}" : "")) { Style = TextStyle.Caption, Wrap = !compact };
+            default:
+                return null;
         }
-        else if (state == FrameSourceState.Failed)
-        {
-            children.Add(new TextWidget("FPS-Messung läuft nicht" + (message is { Length: > 0 } ? $": {message}" : "")) { Style = TextStyle.Secondary, Wrap = true });
-        }
-        if (session is not null)
-        {
-            var f = session.Frames;
-            children.Add(new TextWidget(session.InForeground && f is not null
-                ? $"{session.Name}: {Fps(f.Fps, culture)} FPS"
-                : $"{session.Name} läuft") { Style = TextStyle.Body });
-        }
-        else if (state != FrameSourceState.Denied)
-        {
-            children.Add(new TextWidget("Wartet auf ein Spiel. Erkannt werden Vollbildspiele und alles aus Steam, Epic, GOG, Xbox und Co.") { Style = TextStyle.Secondary, Wrap = true });
-            if (last is not null)
-            {
-                children.Add(new TextWidget("Zuletzt: " + SummaryText(last, culture)) { Style = TextStyle.Caption, Wrap = true });
-            }
-        }
-        return new StackWidget(children)
-        {
-            Orientation = StackOrientation.Vertical,
-            Spacing = 6,
-            Align = CrossAlign.Stretch,
-            Background = BrimColors.Graphite,
-            CornerRadius = 14,
-            Padding = (12, 10, 12, 10),
-        };
     }
 
     // ───────── Fazit ─────────

@@ -55,6 +55,8 @@ public sealed class GameModePlugin
 
     private static CultureInfo Culture => CultureInfo.CurrentCulture;
 
+    private Measurement Measurement => new(_frames.State, _frames.Message, _setupNote);
+
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
@@ -147,7 +149,7 @@ public sealed class GameModePlugin
     {
         if (Session is { } session)
         {
-            var activity = Views.Activity(session, Settings, now, Culture);
+            var activity = Views.Activity(session, Settings, Measurement, now, Culture);
             if (Changed("activity", activity))
             {
                 await _sink.SetActivityAsync(activity);
@@ -155,15 +157,9 @@ public sealed class GameModePlugin
             }
         }
 
-        var status = Views.Status(_frames.State, _frames.Message, Session, LastGame, _setupNote, Culture);
-        if (Changed("status", status))
-        {
-            await _sink.SetViewAsync("status", status, 10);
-        }
-
         foreach (var size in _placed.GetValueOrDefault("game") ?? [])
         {
-            var widget = Views.GameWidget(Session, LastGame, size, now, Culture);
+            var widget = Views.GameWidget(Session, LastGame, Measurement, size, now, Culture);
             if (Changed("game:" + size, widget))
             {
                 await _sink.SetWidgetAsync("game", size, widget);
@@ -231,7 +227,11 @@ public sealed class GameModePlugin
         {
             _setupNote = ok
                 ? "Fertig. Melde dich einmal von Windows ab und wieder an, dann misst GameMode die Bildrate."
-                : "Das hat nicht geklappt. Ohne Adminrechte lässt sich die Gruppe nicht setzen.";
+                : null;
+            if (!ok)
+            {
+                await _sink.ShowHudAsync(new HudParams { Glyph = Views.GameGlyph, Text = "Einrichten hat nicht geklappt (Adminrechte nötig)" });
+            }
             await RenderAsync(_time.GetUtcNow());
         }
         finally
